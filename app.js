@@ -32,7 +32,18 @@ var UIController = (function () {
 
 
 var controller = (function (budgetCtrl, UIctrl) {
-    var DOM = UIctrl.getDOMstring();
+
+    var setupEventListeners = function () {
+        var DOM = UIctrl.getDOMstring();
+        document.querySelector(DOM.inputBtn).addEventListener('click', cntrlAddItem);
+        document.addEventListener('keypress', function (event) {
+            if (event.keyCode === 13 || event.which === 13) {
+                cntrlAddItem();
+            }
+        })
+    }
+
+
 
     var cntrlAddItem = function () {
         // 1. Get Input field data
@@ -48,12 +59,14 @@ var controller = (function (budgetCtrl, UIctrl) {
 
     };
 
-    document.querySelector(DOM.inputBtn).addEventListener('click', cntrlAddItem);
-
-    document.addEventListener('keypress', function (event) {
-        if (event.keyCode === 13 || event.which === 13) {
-            cntrlAddItem();
+    return {
+        init: function () {
+            console.log('Application now running...');
+            setupEventListeners();
         }
-    })
+    }
 
 })(budgetController, UIController);
+
+// Init function that is called when application starts!!!
+controller.init();
