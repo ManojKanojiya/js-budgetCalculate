@@ -2,39 +2,37 @@
  * IIFE returns an object so that methods of that objects become public and can be accessed by outside IIFE.
  */
 
-// IIFE
+// BUDGET CONTROLLER
 var budgetController = (function () {
-
-    var x = 5;
-
-    var add = function (a) {
-        return x + a;
-    }
-
-    // Closure 
-    return {
-        publicTest: function (b) {
-            return add(b)
-        }
-    }
-
+    // Some Code
 })();
 
-
+// UI CONTROLLER
 var UIController = (function () {
-
     // Some Code 
 })();
 
 
 var controller = (function (budgetCtrl, UIctrl) {
-    var z = budgetCtrl.publicTest(5);
+    var cntrlAddItem = function () {
+        // 1. Get Input field data
 
-    return {
-        publicControllerTest: function () {
-            console.log(z);
-            return z
+        // 2. Add item to budget controller
+
+        // 3. Add items into UI
+
+        // 4. Calculate Budget
+
+        // 5. Add that into UI
+        console.log('Cntrl Add Item!!!')
+    };
+
+    document.querySelector('.add__btn').addEventListener('click', cntrlAddItem);
+
+    document.addEventListener('keypress', function (event) {
+        if (event.keyCode === 13 || event.which === 13) {
+            cntrlAddItem();
         }
-    }
+    })
 
 })(budgetController, UIController);
