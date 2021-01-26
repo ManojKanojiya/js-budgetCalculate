@@ -64,7 +64,9 @@ var UIController = (function () {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
-        inputBtn: '.add__btn'
+        inputBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expenseContainer: '.expenses__list'
     }
 
     return {
@@ -77,6 +79,35 @@ var UIController = (function () {
         },
         getDOMstring: function () {
             return DOMstrings;
+        },
+        addItemList: function (obj, type) {
+            var html, newHtml, element;
+
+            if (type === 'inc') {
+                element = DOMstrings.incomeContainer;
+                html = '<div class="item clearfix" id="income-%id%"> <div class="item__description">%description%</div> <div class="right clearfix"><div class="item__value">+ %value%</div><div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button> </div></div></div>';
+            } else if (type === 'exp') {
+                element = DOMstrings.expenseContainer;
+                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">21%</div> <div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            }
+
+            newHtml = html.replace('%id%', obj.id);
+            newHtml = newHtml.replace('%description%', obj.description);
+            newHtml = newHtml.replace('%value%', obj.value);
+
+            document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+        },
+        clearFields: function () {
+            var fields, fieldsArr;
+            fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
+
+            fieldsArr = Array.prototype.slice.call(fields);
+
+            fieldsArr.forEach(function (current, index, array) {
+                current.value = '';
+            });
+
+            fieldsArr[0].focus();
         }
     }
 })();
@@ -103,11 +134,16 @@ var controller = (function (budgetCtrl, UIctrl) {
 
         // 2. Add item to budget controller
         newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+
         // 3. Add items into UI
+        UIctrl.addItemList(newItem, input.type);
 
-        // 4. Calculate Budget
+        // 4. Clear fields
+        UIctrl.clearFields();
 
-        // 5. Add that into UI
+        // 5. Calculate Budget
+
+        // 6. Add that into UI
 
     };
 
