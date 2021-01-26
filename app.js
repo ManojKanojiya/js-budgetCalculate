@@ -101,7 +101,11 @@ var UIController = (function () {
         inputValue: '.add__value',
         inputBtn: '.add__btn',
         incomeContainer: '.income__list',
-        expenseContainer: '.expenses__list'
+        expenseContainer: '.expenses__list',
+        incomeLabel: '.budget__income--value',
+        expenseLabel: '.budget__expenses--value',
+        budgetLabel: '.budget__value',
+        percentageLabel: '.budget__expenses--percentage'
     }
 
     return {
@@ -143,6 +147,18 @@ var UIController = (function () {
             });
 
             fieldsArr[0].focus();
+        },
+        displayBudget: function (obj) {
+            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
+            document.querySelector(DOMstrings.expenseLabel).textContent = obj.totalExp;
+            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+
+            if (obj.percentage > 0) {
+                document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
+            } else {
+                document.querySelector(DOMstrings.percentageLabel).textContent = '---';
+            }
+
         }
     }
 })();
@@ -161,14 +177,15 @@ var controller = (function (budgetCtrl, UIctrl) {
     }
 
     var updateBudget = function () {
-        var data;
+        var budget;
         // 1. Calculate Budget
         budgetCtrl.calculateBudget();
 
         // 2. Get BudgetData
-        data = budgetCtrl.getBudget();
-        console.log(data);
+        budget = budgetCtrl.getBudget();
+
         // 3. Add that into UI
+        UIctrl.displayBudget(budget);
     }
 
     var cntrlAddItem = function () {
@@ -194,6 +211,12 @@ var controller = (function (budgetCtrl, UIctrl) {
     return {
         init: function () {
             console.log('Application now running...');
+            UIctrl.displayBudget({
+                budget: 0,
+                percentage: -1,
+                totalInc: 0,
+                totalExp: 0
+            })
             setupEventListeners();
         }
     }
