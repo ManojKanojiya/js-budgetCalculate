@@ -1,5 +1,5 @@
 /*****************************
- * IIFE returns an object so that methods of that objects become public and can be accessed by outside IIFE.
+ * IIFE returns an object so  methods of that objects become public and can be accessed by outside IIFE.
  */
 
 // BUDGET CONTROLLER
@@ -22,9 +22,21 @@ var budgetController = (function () {
             exp: []
         },
         totals: {
-            exp: 0,
-            inc: 0
-        }
+            inc: 0,
+            exp: 0
+        },
+        budget: 0,
+        percentage: -1
+    }
+
+    var calculateTotal = function (type) {
+        var sum = 0;
+
+        data.allItems[type].forEach(function (cur) {
+            sum += cur.value;
+        });
+
+        data.totals[type] = sum;
     }
 
     return {
@@ -51,6 +63,29 @@ var budgetController = (function () {
             // Return new created item
             return newItem
         },
+        calculateBudget: function () {
+            // Calculate Total inc and exp
+            calculateTotal('inc');
+            calculateTotal('exp');
+
+            // Calculate budget inc - exp
+            data.budget = data.totals.inc - data.totals.exp;
+
+            // Calculate Percentage
+            if (data.totals.inc > 0) {
+                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            } else {
+                data.percentage = -1;
+            }
+        },
+        getBudget: function () {
+            return {
+                budget: data.budget,
+                percentage: data.percentage,
+                totalInc: data.totals.inc,
+                totalExp: data.totals.exp
+            }
+        },
         testing: function () {
             console.log(data);
         }
@@ -74,7 +109,7 @@ var UIController = (function () {
             return {
                 type: document.querySelector(DOMstrings.inputType).value,
                 description: document.querySelector(DOMstrings.inputDescription).value,
-                value: document.querySelector(DOMstrings.inputValue).value
+                value: parseFloat(document.querySelector(DOMstrings.inputValue).value)
             }
         },
         getDOMstring: function () {
@@ -125,26 +160,35 @@ var controller = (function (budgetCtrl, UIctrl) {
         })
     }
 
+    var updateBudget = function () {
+        var data;
+        // 1. Calculate Budget
+        budgetCtrl.calculateBudget();
 
+        // 2. Get BudgetData
+        data = budgetCtrl.getBudget();
+        console.log(data);
+        // 3. Add that into UI
+    }
 
     var cntrlAddItem = function () {
         var input, newItem;
         // 1. Get Input field data
         input = UIctrl.getInput();
 
-        // 2. Add item to budget controller
-        newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+        if (input.description !== '' && !isNaN(input.value) && input.value > 0) {
+            // 2. Add item to budget controller
+            newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
-        // 3. Add items into UI
-        UIctrl.addItemList(newItem, input.type);
+            // 3. Add items into UI
+            UIctrl.addItemList(newItem, input.type);
 
-        // 4. Clear fields
-        UIctrl.clearFields();
+            // 4. Clear fields
+            UIctrl.clearFields();
 
-        // 5. Calculate Budget
-
-        // 6. Add that into UI
-
+            // 5.Calculate and update Budget
+            updateBudget();
+        }
     };
 
     return {
